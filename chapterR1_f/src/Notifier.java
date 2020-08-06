@@ -57,7 +57,12 @@ public final class Notifier {
 	}
 
 	public void loopForMessages(MobileDevice device) {
-
+		while(active) {
+			List<String>messageList;
+			synchronized(lock) {
+				messageList = messageToDeliver.remove(device);
+			}
+		}
 	}
 
 
