@@ -1,4 +1,4 @@
-import javax.management.NotificationListener;
+
 
 public class MobileDevice {
 	private final String name;
@@ -9,7 +9,7 @@ public class MobileDevice {
 		this.listener = listener;
 	}
 
-	public NotificationListener getListenere() {return listener;}
+	public NotificationListener getListener() {return listener;}
 
 	public String getName() { return name;}
 

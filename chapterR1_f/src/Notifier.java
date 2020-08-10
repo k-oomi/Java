@@ -60,11 +60,45 @@ public final class Notifier {
 		while(active) {
 			List<String>messageList;
 			synchronized(lock) {
-				messageList = messageToDeliver.remove(device);
+				messageList = messagesToDeliver.remove(device);
+			}
+			if (messageList != null) {
+				device.getListener().onNotificationReceived(messageList);
+			}
+			synchronized(device) {
+				try {
+					//通知メッセージが到着するかタイムアウトするまで待つ
+					device.wait(3000L);
+				}catch(InterruptedException e) {
+					break;
+				}
+
 			}
 		}
 	}
 
+	public void shutdown() {
+		active = false;
+		List<MobileDevice> devices = new ArrayList<>();
+		synchronized(lock) {
+			messagesToDeliver.clear();
+			for (String user : userMobileDevices.keySet()) {
+				for(MobileDevice device : userMobileDevices.get(user))
+				{
+					devices.add(device);
+				}
+			}
+			userMobileDevices.clear();
+		}
+		for(MobileDevice device : devices)
+		{
+			synchronized (device)
+			{
+				//待ち受け状態のスレッドに通知
+				device.notifyAll();
+			}
+		}
+	}
 
 }
 
